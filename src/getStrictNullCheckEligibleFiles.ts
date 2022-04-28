@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as glob from 'glob'
 import { ImportTracker } from './tsHelper'
 import { findCycles } from './findCycles'
+import ts = require('typescript')
 
 function considerFile(file: string): boolean {
   return (file.endsWith('.ts') || file.endsWith('.tsx')) &&
@@ -111,7 +112,7 @@ interface TSConfig {
  * --strictNullChecks.
  */
 export async function getCheckedFiles(tsconfigPath: string, srcRoot: string): Promise<Set<string>> {
-  const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath).toString()) as TSConfig
+  const tsconfig = ts.readConfigFile(tsconfigPath, ts.sys.readFile).config as TSConfig
 
   const set = new Set<string>();
 
@@ -127,7 +128,7 @@ export async function getCheckedFiles(tsconfigPath: string, srcRoot: string): Pr
             set.add(file)
           }
         }
-        resolve()
+        resolve(set)
       })
     });
   }));
@@ -142,7 +143,7 @@ export async function getCheckedFiles(tsconfigPath: string, srcRoot: string): Pr
         for (const file of files) {
           set.delete(file)
         }
-        resolve()
+        resolve(set)
       })
     });
   }));

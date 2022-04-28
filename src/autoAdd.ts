@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { listStrictNullCheckEligibleFiles, getCheckedFiles } from './getStrictNullCheckEligibleFiles'
 import { ErrorCounter } from './errorCounter'
+import ts = require('typescript')
 
 const tsconfigPath = process.argv[2]
 const srcRoot = path.resolve(path.dirname(tsconfigPath))
@@ -44,7 +45,7 @@ async function tryAutoAddStrictNulls() {
 }
 
 function addFileToConfig(relativeFilePath: string) {
-  const config = JSON.parse(fs.readFileSync(tsconfigPath).toString())
+  const config = ts.readConfigFile(tsconfigPath, ts.sys.readFile).config
   const path = `./${relativeFilePath}`
   const excludeIndex = config.exclude.indexOf(path)
   if (excludeIndex >= 0) {
