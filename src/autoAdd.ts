@@ -4,7 +4,7 @@ import { listStrictNullCheckEligibleFiles, getCheckedFiles } from './getStrictNu
 import { ErrorCounter } from './errorCounter'
 
 const tsconfigPath = process.argv[2]
-const srcRoot = path.dirname(tsconfigPath)
+const srcRoot = path.resolve(path.dirname(tsconfigPath))
 
 tryAutoAddStrictNulls()
 

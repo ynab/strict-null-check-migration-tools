@@ -13,7 +13,7 @@ export function getImportsForFile(file: string, srcRoot: string) {
     const index = path.join(file, "index.ts")
     if (fs.existsSync(index)) {
       // https://basarat.gitbooks.io/typescript/docs/tips/barrel.html
-      console.warn(`Warning: Barrel import: ${path.relative(srcRoot, file)}`)
+      // console.warn(`Warning: Barrel import: ${path.relative(srcRoot, file)}`)
       file = index
     } else {
       throw new Error(`Warning: Importing a directory without an index.ts file: ${path.relative(srcRoot, file)}`)
@@ -23,6 +23,8 @@ export function getImportsForFile(file: string, srcRoot: string) {
   const fileInfo = ts.preProcessFile(fs.readFileSync(file).toString());
   return fileInfo.importedFiles
     .map(importedFile => importedFile.fileName)
+    // Resolve relative barrel imports
+    .map((fileName) => (fileName === "." || fileName === ".." ? `${fileName}/index.ts` : fileName))
     // remove svg, css imports
     .filter(fileName => !fileName.endsWith(".css") && !fileName.endsWith(".svg") && !fileName.endsWith(".json"))
     .filter(fileName => !fileName.endsWith(".js") && !fileName.endsWith(".jsx")) // Assume .js/.jsx imports have a .d.ts available

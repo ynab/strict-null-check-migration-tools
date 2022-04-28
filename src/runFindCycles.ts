@@ -3,7 +3,7 @@ import { forEachFileInSrc } from './getStrictNullCheckEligibleFiles'
 import { findCycles } from './findCycles'
 
 const tsconfigPath = process.argv[2]
-const srcRoot = path.dirname(tsconfigPath)
+const srcRoot = path.resolve(path.dirname(tsconfigPath))
 
 runFindCycles()
 

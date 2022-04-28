@@ -4,7 +4,7 @@ import { getImportsForFile } from './tsHelper'
 
 const tsconfigPath = process.argv[2]
 console.log(tsconfigPath)
-const srcRoot = path.dirname(tsconfigPath)
+const srcRoot = path.resolve(path.dirname(tsconfigPath))
 
 let printDependedOnCount = true
 
