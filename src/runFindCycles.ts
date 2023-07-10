@@ -4,12 +4,13 @@ import { findCycles } from './findCycles'
 
 const tsconfigPath = process.argv[2]
 const srcRoot = path.resolve(path.dirname(tsconfigPath))
+const ignorePrefixPath = process.argv[3] ?? ""
 
 runFindCycles()
 
 async function runFindCycles() {
   let files = await forEachFileInSrc(srcRoot)
-  let cycles = findCycles(srcRoot, files)
+  let cycles = findCycles(srcRoot, files, ignorePrefixPath)
 
   const singleFiles = []
   let stronglyConnectedComponentCount = 0

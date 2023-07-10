@@ -7,6 +7,7 @@ import { ErrorCounter } from './errorCounter'
 
 const tsconfigPath = process.argv[2]
 const srcRoot = path.resolve(path.dirname(tsconfigPath))
+const ignorePrefixPath = process.argv[3] ? process.argv[3] ?? "": ""
 const countErrors = process.argv.indexOf('--countErrors') >= 0
 
 summary()
@@ -37,10 +38,10 @@ async function summary() {
   const allFiles = await forEachFileInSrc(srcRoot)
   const checkedFiles = await getCheckedFiles(tsconfigPath, srcRoot)
   const eligibleFiles = new Set([
-    ...await listStrictNullCheckEligibleFiles(srcRoot, checkedFiles),
-    ...(await listStrictNullCheckEligibleCycles(srcRoot, checkedFiles)).reduce((a, b) => a.concat(b), [])
+    ...await listStrictNullCheckEligibleFiles(srcRoot, checkedFiles, ignorePrefixPath),
+    ...(await listStrictNullCheckEligibleCycles(srcRoot, checkedFiles, ignorePrefixPath)).reduce((a, b) => a.concat(b), [])
   ])
-  const importTracker = new ImportTracker(srcRoot)
+  const importTracker = new ImportTracker(srcRoot, ignorePrefixPath)
 
   let errorCounter = new ErrorCounter(tsconfigPath)
   if (countErrors) {
@@ -50,7 +51,7 @@ async function summary() {
   console.log(`Current strict null checking progress ${checkedFiles.size}/${allFiles.length}`)
   console.log(`Current eligible file count: ${eligibleFiles.size}`)
 
-  const cycles = findCycles(srcRoot, allFiles)
+  const cycles = findCycles(srcRoot, allFiles, ignorePrefixPath)
   let nodes: DependencyNode[] = []
   for (let i = 0; i < cycles.length; i++) {
     let files = cycles[i]

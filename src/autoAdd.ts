@@ -6,6 +6,7 @@ import ts = require('typescript')
 
 const tsconfigPath = process.argv[2]
 const srcRoot = path.resolve(path.dirname(tsconfigPath))
+const ignorePrefixPath = process.argv[3] ?? ""
 
 tryAutoAddStrictNulls()
 
@@ -20,7 +21,7 @@ async function tryAutoAddStrictNulls() {
   while (hasAddedFile) {
     hasAddedFile = false
 
-    const eligibleFiles = await listStrictNullCheckEligibleFiles(srcRoot, checkedFiles)
+    const eligibleFiles = await listStrictNullCheckEligibleFiles(srcRoot, checkedFiles, ignorePrefixPath)
 
     errorCounter.start()
     for (let i = 0; i < eligibleFiles.length; i++) {
