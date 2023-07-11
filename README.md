@@ -1,12 +1,12 @@
-This repository contains scripts that Figma used to migrate its TypeScript codebase to use `--strictNullChecks`.
+This repository contains scripts that YNAB used to migrate its TypeScript codebase to use `--strictNullChecks`.
 
-These scripts were originally forked from https://github.com/mjbvz/vscode-strict-null-check-migration-tools
+These scripts were originally forked from https://github.com/figma/strict-null-check-migration-tools
 
 # How to use
 
 These are scripts used in the incremental migration approach described in [https://www.figma.com/blog/inside-figma-a-case-study-on-strict-null-checks/].
 
-- `npm run find-candidates -- <your_project_path>/tsconfig.strictNullChecks.json` lists all the files whose dependencies have all been whitelisted. These files can be safely whitelisted too (once their strict null check errors have been fixed). It generates an output like this:
+- `npm run find-candidates -- ../evergreen/ynab_shared_library/app/base/tsconfig.strictNullChecks.json ynab_shared_library/app/base/` lists all the files whose dependencies have all been whitelisted. These files can be safely whitelisted too (once their strict null check errors have been fixed). It generates an output like this:
 
 ```
 These files only depend on other files for which strictNullCheck has already been enabled.
@@ -18,7 +18,7 @@ The dependency count is approximate (this script only resolves up to third order
 ...
 ```
 
-- `npm run auto-add -- <your_project_path>/tsconfig.strictNullChecks.json` tries to automatically add to `tsconfig.strictNullChecks.json` every file that can already compile with strictNullChecks without further modifications. It generates an output like this:
+- `npm run auto-add -- ../evergreen/ynab_shared_library/app/base/tsconfig.strictNullChecks.json ynab_shared_library/app/base/` tries to automatically add to `tsconfig.strictNullChecks.json` every file that can already compile with strictNullChecks without further modifications. It generates an output like this:
 
 ```
 ...
@@ -31,7 +31,7 @@ Trying to auto add 'figma_app/views/cart/number_of_editors.tsx' (file 27/48)
 ...
 ```
 
-- `npm run find-cycles -- <your_project_path>/tsconfig.json` finds all dependency cycles that need to be strict null checked together. Generates an output like this:
+- `npm run find-cycles -- ../evergreen/ynab_shared_library/app/base/tsconfig.strictNullChecks.json ynab_shared_library/app/base/` finds all dependency cycles that need to be strict null checked together. Generates an output like this:
 
 ```
 ...
