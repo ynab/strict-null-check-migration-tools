@@ -46,9 +46,10 @@ export function forEachFileInSrc(srcRoot: string): Promise<string[]> {
  */
 export async function listStrictNullCheckEligibleFiles(
   srcRoot: string,
-  checkedFiles: Set<string>): Promise<string[]> {
+  checkedFiles: Set<string>, 
+  ignorePrefixPath: string): Promise<string[]> {
 
-  const importsTracker = new ImportTracker(srcRoot)
+  const importsTracker = new ImportTracker(srcRoot, ignorePrefixPath)
 
   const files = await forEachFileInSrc(srcRoot)
   return files.filter(file => {
@@ -65,12 +66,13 @@ export async function listStrictNullCheckEligibleFiles(
  */
 export async function listStrictNullCheckEligibleCycles(
   srcRoot: string,
-  checkedFiles: Set<string>): Promise<string[][]> {
+  checkedFiles: Set<string>,
+  ignorePrefixPath: string): Promise<string[][]> {
 
-  const importsTracker = new ImportTracker(srcRoot)
+  const importsTracker = new ImportTracker(srcRoot, ignorePrefixPath)
 
   const files = await forEachFileInSrc(srcRoot)
-  const cycles = findCycles(srcRoot, files)
+  const cycles = findCycles(srcRoot, files, ignorePrefixPath)
   return cycles.filter(filesInCycle => {
     // A single file is not a cycle
     if (filesInCycle.length <= 1) {

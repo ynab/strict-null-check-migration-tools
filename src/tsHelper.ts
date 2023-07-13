@@ -5,7 +5,7 @@ import * as ts from 'typescript'
 /**
  * Given a file, return the list of files it imports as absolute paths.
  */
-export function getImportsForFile(file: string, srcRoot: string) {
+export function getImportsForFile(file: string, srcRoot: string, ignorePrefixPath: string) {
   // Follow symlink so directory check works.
   file = fs.realpathSync(file)
 
@@ -30,6 +30,12 @@ export function getImportsForFile(file: string, srcRoot: string) {
     .filter(fileName => !fileName.endsWith(".js") && !fileName.endsWith(".jsx")) // Assume .js/.jsx imports have a .d.ts available
     .filter(x => /\//.test(x)) // remove node modules (the import must contain '/')
     .map(fileName => {
+      // replace baseUrl!
+      if (ignorePrefixPath) {
+        const regex = new RegExp(`^${ignorePrefixPath}`)
+        fileName = fileName.replace(regex, "")
+      }
+
       if (/(^\.\/)|(^\.\.\/)/.test(fileName)) {
         return path.join(path.dirname(file), fileName)
       }
@@ -59,13 +65,13 @@ export function getImportsForFile(file: string, srcRoot: string) {
 export class ImportTracker {
   private imports = new Map<string, string[]>()
 
-  constructor(private srcRoot: string) {}
+  constructor(private srcRoot: string, private ignorePrefixPath: string) {}
 
   public getImports(file: string): string[] {
     if (this.imports.has(file)) {
       return this.imports.get(file)
     }
-    const imports = getImportsForFile(file, this.srcRoot)
+    const imports = getImportsForFile(file, this.srcRoot, this.ignorePrefixPath)
     this.imports.set(file, imports)
     return imports
   }
